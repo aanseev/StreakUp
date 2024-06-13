@@ -1,12 +1,10 @@
 import { useLocalSearchParams } from "expo-router";
 import { View, Text } from "react-native";
 
-export default function UserPage() {
-    const { id } = useLocalSearchParams<{ id: string}>();
-
+export default function ProfilePage() {
     return (
         <View>
-            <Text>User Page - {id}</Text>
+            <Text>Profile Page</Text>
         </View>
     );
 }

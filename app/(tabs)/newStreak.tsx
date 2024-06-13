@@ -1,11 +1,10 @@
 import { Link, router } from "expo-router";
 import { View, Text, Pressable } from "react-native";
 
-export default function HomePage() {
+export default function NewStreak() {
     return (
         <View>
-            <Text>Home page</Text>
-            <Link href="/profile">Profile</Link>
+            <Text>New streak</Text>
         </View>
     );
 }
