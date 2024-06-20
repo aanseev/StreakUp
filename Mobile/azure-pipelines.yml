@@ -1,0 +1,22 @@
+trigger:
+- master
+
+pool:
+  name: 'Self Hosted Agent'  # Your self-hosted agent pool name
+  demands:
+    - agent.os -equals Windows_NT
+
+steps:
+- checkout: self
+
+- script: |
+    git clone https://$(AZURE_DEVOPS_PAT)@dev.azure.com/aanseev/StreakUp/_git/StreakUp cloned_repo
+    cd cloned_repo
+    git config --global user.name "azure-devops"
+    git config --global user.email "azure-devops@azure.com"
+    git remote add github https://$(GITHUB_PAT)@github.com/aanseev/StreakUp.git
+    git push github master --force
+  displayName: 'Clone from Azure DevOps and Push to GitHub'
+  env:
+    AZURE_DEVOPS_PAT: $(AZURE_DEVOPS_PAT)
+    GITHUB_PAT: $(GITHUB_PAT)
