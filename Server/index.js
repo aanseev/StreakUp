@@ -1,27 +1,51 @@
+// server.js
 const express = require('express');
-const app = express();
-const port = 1337;
-const MongoClient = require('mongodb').MongoClient;
+const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
 
-app.listen(port, () => {
-  console.log(`Server is running at http://localhost:${port}`);
+const app = express();
+const PORT = 1337;
+const SECRET_KEY = 'your_secret_key';
+
+app.use(bodyParser.json());
+
+// Sample user data (in practice, use a database)
+const users = {
+  user1: 'password1',
+  user2: 'password2',
+};
+
+// Login route to generate a token
+app.post('/login', (req, res) => {
+  const { username, password } = req.body;
+
+  if (users[username] && users[username] === password) {
+    const token = jwt.sign({ username }, SECRET_KEY, { expiresIn: '1h' });
+    res.json({ token });
+  } else {
+    res.status(401).json({ message: 'Invalid credentials' });
+  }
 });
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
+// Middleware to protect routes
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (token == null) return res.sendStatus(401);
+
+  jwt.verify(token, SECRET_KEY, (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+};
+
+// Protected route
+app.get('/protected', authenticateToken, (req, res) => {
+  res.json({ message: 'This is a protected route', user: req.user });
 });
 
-app.get('/notes', (req, res) => {
-  res.send('Hello World!');
-  // MongoClient.connect('mongodb://localhost:27017', (err, client) => {
-  //   if (err) throw err;
-  //   const db = client.db('notes');
-  //   const collection = db.collection('notes');
-  //   collection.find({}).toArray((err, docs) => {
-  //     if (err) throw err;
-  //     res.json(docs);
-  //     client.close();
-  //   });
-  // });
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
