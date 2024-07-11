@@ -10,6 +10,7 @@ const SECRET_KEY = 'your_secret_key';
 app.use(bodyParser.json());
 
 // Sample user data (in practice, use a database)
+// test
 const users = {
   user1: 'password1',
   user2: 'password2',
